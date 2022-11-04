@@ -4,7 +4,7 @@
 
 1. All files will be compiled on Ubuntu 20.04 LTS using the options
 
-`gcc -Wall -Werror -Wextra -pedantic -std=gnu89`
+`gcc -Wall -Werror -Wextra -pedantic -std=gnu89 *.c -o hsh`
 
 2. The shell should not have any memory leaks
 
