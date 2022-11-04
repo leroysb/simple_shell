@@ -28,9 +28,3 @@ Generates AUTHORS; a file with all the names and corresponding emails of individ
 
 `sh`
 
-## Authors
-
-Leroy Buliro | @leroysb
-
-Derrick Nyabuto | @
-
