@@ -1,18 +1,27 @@
-#include <stdio.h>
-#include <unistd.h>
-#include <string.h>
-#include <sys/wait.h>
-#include <stdlib.h>
+#include "shell.h"
 
-int _len(char *string)
+/**
+* nextline - checks if user hit return key without any other input
+* @string: string containing user input
+* Return: 1 to indicate input contained newline char only or 0 if not
+*/
+int nextline(char *string)
 {
-	int i;
+	int i = 0;
 
-	for (i = 0; string[i] != '\0'; i++)
-		;
-	return (i);
+	while (string[i] != '\n')
+		i++;
+	if (i == 0)
+		return (1);
+	else
+		return (0);
 }
 
+/**
+* exit_status - checks for program termination command
+* @string: string containing user input
+* @ptr: pointer to exit trigger value in program
+*/
 void exit_status(char *string, int *ptr)
 {
 	int i, count = 0;
@@ -28,60 +37,100 @@ void exit_status(char *string, int *ptr)
 			*ptr = 1;
 }
 
-
-int main(void)
+/**
+* child - forks a child process and executes passed command in forked instance
+* @tokens: array of strings containing passed command and arguments
+* @buffer: string holding input from user to be freed if execution fails
+*/
+void child(char **tokens, char *buffer)
 {
-	char *buffer, **tokens, *delim = " \t\n";
-	size_t bufsize = sizeof(char) * 1;
-	int i = 0, exitcode = 0, exec = 0;
+	int exec, i;
 	pid_t pid;
+	char *command = pathifier(tokens[0]), *error = ": command not found";
 
-	while (!exitcode)
+	if (command)
 	{
-		buffer = NULL;
-		tokens = NULL;
-		printf("-> ");
-		getline(&buffer, &bufsize, stdin);
-		exit_status(buffer, &exitcode);
-		if (exitcode)
-			break;
-		tokens = malloc(1024);
-
-	
-		while (tokens[i - 1] || i < 1)
-		{
-			if (i < 1)
-			{
-				tokens[i] = strtok(buffer, delim);
-			}
-			else
-			{
-				tokens[i] = strtok(NULL, delim);
-			}
-			i++;
-		}
 		pid = fork();
 		if (pid == -1)
-			return (-1);
+		{
+			perror("fork");
+			exit(0);
+		}
 		if (pid == 0)
 		{
-			//printf("token: %s\nexec: %d\n", tokens[1], exec);
-			exec = execve(tokens[0], tokens, NULL);
+			exec = execve(command, tokens, environ);
 			if (exec == -1)
 			{
-				perror ("execve");
+				perror(tokens[0]);
 				free(buffer);
 				free(tokens);
 				exit(0);
 			}
-
 		}
 		else
 			wait(NULL);
-		free(tokens);
-		free(buffer);
 	}
-	free(tokens);
+	else
+	{
+		for (i = 0; tokens[0][i]; i++)
+			_putchar(tokens[0][i]);
+		for (i = 0; error[i]; i++)
+			_putchar(error[i]);
+		_putchar('\n');
+	}
+	free(command);
+}
+
+/**
+* _signal - handles ^C
+* @z: unused variable
+*/
+void _signal(__attribute__((unused)) int z)
+{
+	_putchar('\n');
+	_putchar('-');
+	_putchar('>');
+	_putchar(' ');
+}
+
+/**
+* main - program start point
+* Return: 0
+*/
+int main(void)
+{
+	char *buffer = NULL, **tokens = NULL, *delim = " \t\n";
+	size_t bufsize = sizeof(char) * 1;
+	int i = 0, exitcode = 0;
+
+	_putchar('-');
+	_putchar('>');
+	_putchar(' ');
+	signal(SIGINT, _signal);
+	if (getline(&buffer, &bufsize, stdin) == -1)
+		_putchar('\n');
+	else
+	{
+		exit_status(buffer, &exitcode);
+		if (!exitcode)
+		{
+			if (!nextline(buffer))
+			{
+				tokens = malloc(1024);
+				while (tokens[i - 1] || i < 1)
+				{
+					if (i < 1)
+						tokens[i] = strtok(buffer, delim);
+					else
+						tokens[i] = strtok(NULL, delim);
+					i++;
+				}
+				child(tokens, buffer);
+				free(tokens);
+			}
+			main();
+		}
+	}
 	free(buffer);
 	return (0);
 }
