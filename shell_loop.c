@@ -16,7 +16,7 @@ int hsh(info_t *info, char **av)
 	{
 		clear_info(info);
 		if (interactive(info))
-			_puts("$ ");
+			_puts("($) ");
 		_eputchar(BUF_FLUSH);
 		r = get_input(info);
 		if (r != -1)
@@ -132,7 +132,7 @@ void fork_cmd(info_t *info)
 	child_pid = fork();
 	if (child_pid == -1)
 	{
-		/* TODO: PUT ERROR FUNCTION */
+		/* PUT ERROR FUNCTION */
 		perror("Error:");
 		return;
 	}
@@ -145,7 +145,7 @@ void fork_cmd(info_t *info)
 				exit(126);
 			exit(1);
 		}
-		/* TODO: PUT ERROR FUNCTION */
+		/* PUT ERROR FUNCTION */
 	}
 	else
 	{
