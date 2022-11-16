@@ -27,4 +27,3 @@ Generates AUTHORS; a file with all the names and corresponding emails of individ
 ### man or help
 
 `sh`
-
