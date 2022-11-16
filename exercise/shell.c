@@ -88,8 +88,7 @@ void child(char **tokens, char *buffer)
 void _signal(__attribute__((unused)) int z)
 {
 	_putchar('\n');
-	_putchar('-');
-	_putchar('>');
+	_putchar('$');
 	_putchar(' ');
 }
 
@@ -103,8 +102,7 @@ int main(void)
 	size_t bufsize = sizeof(char) * 1;
 	int i = 0, exitcode = 0;
 
-	_putchar('-');
-	_putchar('>');
+	_putchar('$');
 	_putchar(' ');
 	signal(SIGINT, _signal);
 	if (getline(&buffer, &bufsize, stdin) == -1)

@@ -119,11 +119,7 @@ char *pathifier(char *command)
 			_strcat(temp, directories[k]);
 			_strcat(temp, "/");
 			if (_stat(_strcat(temp, command)) == 0)
-			{
-				free(dir_string);
-				free(directories);
-				return (temp);
-			}
+				break;
 			k++;
 			directories[k] = strtok(NULL, delim);
 			free(temp);
